@@ -1,0 +1,60 @@
+services:
+  esb:
+    build:
+      context: .
+      dockerfile: ESB.Dockerfile
+    container_name: esb_core
+    command: uvicorn esb_core.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+  users_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: users_service
+    depends_on:
+      - users_db
+    environment:
+      DB_HOST: users_db
+      DB_PORT: "5432"
+      DB_NAME: users
+      DB_USER: postgres
+      DB_PASSWORD: password
+    command: uvicorn service_users.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+  users_db:
+    image: postgres:13
+    container_name: users_db
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+  membership_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: membership_service
+    depends_on:
+      - membership_db
+    environment:
+      DB_HOST: membership_db
+      DB_PORT: "5432"
+      DB_NAME: membership
+      DB_USER: postgres
+      DB_PASSWORD: password
+      SERVICE_MODULE: service_membership
+    command: uvicorn service_membership.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+  membership_db:
+    image: postgres:13
+    container_name: membership_db
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
