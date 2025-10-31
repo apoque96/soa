@@ -16,6 +16,18 @@ for arg in "$@"; do
       SERVICE_MODULE="service_membership"
       break
       ;;
+    *service_providers.*)
+      SERVICE_MODULE="service_providers"
+      break
+      ;;
+    *service_catalog.*)
+      SERVICE_MODULE="service_catalog"
+      break
+      ;;
+    *service_access.*)
+      SERVICE_MODULE="service_access"
+      break
+      ;;
   esac
 done
 

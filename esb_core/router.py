@@ -7,17 +7,46 @@ class MessageRouter:
     
     # Service registry - maps service names to endpoints
     SERVICE_REGISTRY = {
-        "user-service": "http://users_service:8002/users/validate",
-        "membership-service": "http://membership_service:8004/memberships/internal/create"
+        "user-service": {
+            "validate": "http://users_service:8002/users/validate",
+            "create": "http://users_service:8002/users/",
+            "list": "http://users_service:8002/users/"
+        },
+        "membership-service": {
+            "create": "http://membership_service:8004/memberships/internal/create",
+            "list": "http://membership_service:8004/memberships/"
+        }
     }
     
     # Routing rules - maps message types to transformations and destinations
     ROUTING_RULES = {
         "membership.create": {
             "destination_service": "user-service",
+            "destination_endpoint": "validate",
             "transformer": "membership_to_user_validation_format",
             "validation_required": True,
-            "callback_service": "membership-service"
+            "callback_service": "membership-service",
+            "callback_endpoint": "create"
+        },
+        "user.create": {
+            "destination_service": "user-service",
+            "destination_endpoint": "create",
+            "transformer": "passthrough",
+            "validation_required": False
+        },
+        "user.list": {
+            "destination_service": "user-service",
+            "destination_endpoint": "list",
+            "method": "GET",
+            "transformer": "passthrough",
+            "validation_required": False
+        },
+        "membership.list": {
+            "destination_service": "membership-service",
+            "destination_endpoint": "list",
+            "method": "GET",
+            "transformer": "passthrough",
+            "validation_required": False
         }
     }
     
@@ -64,18 +93,36 @@ class MessageRouter:
         
         # Get destination endpoint
         destination_service = routing_rule["destination_service"]
-        endpoint = self.SERVICE_REGISTRY.get(destination_service)
+        destination_endpoint = routing_rule.get("destination_endpoint", "default")
+        method = routing_rule.get("method", "POST")
         
-        if not endpoint:
+        service_endpoints = self.SERVICE_REGISTRY.get(destination_service)
+        if not service_endpoints:
             return {
                 "status": "error",
                 "message": f"Service not found: {destination_service}"
             }
         
+        # Get the actual URL string
+        if isinstance(service_endpoints, dict):
+            endpoint = service_endpoints.get(destination_endpoint)
+        else:
+            endpoint = service_endpoints
+            
+        if not endpoint or not isinstance(endpoint, str):
+            return {
+                "status": "error",
+                "message": f"Endpoint not found or invalid: {destination_endpoint} in {destination_service}"
+            }
+        
         # Send to destination
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.post(endpoint, json=transformed_payload)
+                if method == "GET":
+                    response = await client.get(endpoint)
+                else:
+                    response = await client.post(endpoint, json=transformed_payload)
+                
                 response.raise_for_status()
                 
                 return {
@@ -101,12 +148,25 @@ class MessageRouter:
         )
         
         validation_service = routing_rule["destination_service"]
-        validation_endpoint = self.SERVICE_REGISTRY.get(validation_service)
+        validation_endpoint_key = routing_rule.get("destination_endpoint", "validate")
         
-        if not validation_endpoint:
+        service_endpoints = self.SERVICE_REGISTRY.get(validation_service)
+        if not service_endpoints:
             return {
                 "status": "error",
                 "message": f"Validation service not found: {validation_service}"
+            }
+        
+        # Get the actual URL string
+        if isinstance(service_endpoints, dict):
+            validation_endpoint = service_endpoints.get(validation_endpoint_key)
+        else:
+            validation_endpoint = service_endpoints
+            
+        if not validation_endpoint or not isinstance(validation_endpoint, str):
+            return {
+                "status": "error",
+                "message": f"Validation endpoint not found or invalid: {validation_endpoint_key} in {validation_service}"
             }
         
         try:
@@ -130,12 +190,25 @@ class MessageRouter:
             # Step 2: If validation passed, call the callback service
             callback_service = routing_rule.get("callback_service")
             if callback_service:
-                callback_endpoint = self.SERVICE_REGISTRY.get(callback_service)
+                callback_endpoint_key = routing_rule.get("callback_endpoint", "create")
                 
-                if not callback_endpoint:
+                callback_service_endpoints = self.SERVICE_REGISTRY.get(callback_service)
+                if not callback_service_endpoints:
                     return {
                         "status": "error",
                         "message": f"Callback service not found: {callback_service}"
+                    }
+                
+                # Get the actual URL string
+                if isinstance(callback_service_endpoints, dict):
+                    callback_endpoint = callback_service_endpoints.get(callback_endpoint_key)
+                else:
+                    callback_endpoint = callback_service_endpoints
+                    
+                if not callback_endpoint or not isinstance(callback_endpoint, str):
+                    return {
+                        "status": "error",
+                        "message": f"Callback endpoint not found or invalid: {callback_endpoint_key} in {callback_service}"
                     }
                 
                 # Send original payload to callback service

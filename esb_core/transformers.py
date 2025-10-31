@@ -11,6 +11,11 @@ class MessageTransformer:
         }
     
     @staticmethod
+    def passthrough(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Pass data through without transformation"""
+        return data
+    
+    @staticmethod
     def validate_message(message: Dict[str, Any]) -> tuple[bool, str]:
         """Validate message structure"""
         required_fields = ["source", "destination", "message_type", "payload"]

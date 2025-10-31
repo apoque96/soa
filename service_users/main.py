@@ -3,6 +3,7 @@ from . import db, models, services, schemas
 from .db import get_db, engine
 from sqlalchemy.orm import Session
 from typing import List
+from .schemas import UserValidateRequest
 
 app = FastAPI(title="Users Service")
 
@@ -29,15 +30,9 @@ def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return services.create_user(db, user)
 
 @app.post("/users/validate")
-def validate_user(user_data: dict, db: Session = Depends(get_db)):
+def validate_user(user_data: UserValidateRequest, db: Session = Depends(get_db)):
     """Validate if a user exists - called by ESB"""
-    user_id = user_data.get("user_id")
-    
-    if not user_id:
-        return {
-            "valid": False,
-            "message": "user_id is required"
-        }
+    user_id = user_data.user_id
     
     user = services.get_user_by_id(db, user_id)
     
