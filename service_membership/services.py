@@ -34,7 +34,8 @@ def create_membership(db: Session, membership: MembershipBase):
             plan_type=membership.plan_type,
             payment_status=membership.payment_status,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            benefits=membership.benefits
         )
         db.add(db_membership)
         db.commit()

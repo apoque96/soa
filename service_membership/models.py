@@ -11,3 +11,4 @@ class Membership(Base):
     payment_status = Column(String, default="active")
     start_date = Column(DateTime, default=datetime.datetime.now)
     end_date = Column(DateTime, nullable=True)
+    benefits = Column(String, nullable=True)
