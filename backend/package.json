@@ -1,0 +1,20 @@
+{
+  "name": "soa-lite",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "SOA demo con Gateway, Orchestrator y ESB (Auth, Catalog A, Order B).",
+  "main": "gateway.js",
+  "scripts": {
+    "start:auth": "node services/auth-service.js",
+    "start:catalog": "node services/catalog-service.js",
+    "start:order": "node services/order-service.js",
+    "start:orchestrator": "node services/composite-service.js",
+    "start:gateway": "node gateway.js",
+    "start:all": "powershell -NoProfile -Command \"Start-Process -WindowStyle Minimized node -ArgumentList 'services/auth-service.js'; Start-Process -WindowStyle Minimized node -ArgumentList 'services/catalog-service.js'; Start-Process -WindowStyle Minimized node -ArgumentList 'services/order-service.js'; Start-Process -WindowStyle Minimized node -ArgumentList 'services/composite-service.js'; Start-Process -WindowStyle Minimized node -ArgumentList 'gateway.js'; Start-Sleep -Seconds 1; Write-Host 'Servicios: AUTH:3001  CATALOG:3002  ORDER:3003  ORCH:3004  GATEWAY:3000'\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "uuid": "^9.0.1"
+  }
+}

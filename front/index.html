@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>SaaS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%2322d3ee'/%3E%3Ctext x='32' y='39' font-size='28' text-anchor='middle' fill='%230b1220' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Software 1</div>
+  <nav class="nav">
+    <button class="nav-btn" data-view="market">Marketplace</button>
+    <button class="nav-btn" data-view="access">Mis Accesos</button>
+    <button class="nav-btn admin-only" data-view="admin">Admin</button>
+    <button class="nav-btn" data-view="about">SOA</button>
+  </nav>
+  <div class="session">
+    <span id="whoami" class="whoami">No autenticado</span>
+    <button id="btnLogin" class="btn">Entrar</button>
+    <button id="btnLogout" class="btn btn-outline hidden">Salir</button>
+  </div>
+</header>
+
+<main id="views">
+  <!-- Marketplace -->
+  <section id="view-market" class="view active">
+    <div class="toolbar">
+      <h1>Planes disponibles (Empresa A: Catálogo)</h1>
+      <div class="tools">
+        <input id="plan-search" class="input" placeholder="Buscar planes..."/>
+        <button id="refresh-plans" class="btn btn-outline">Refrescar</button>
+      </div>
+    </div>
+    <div id="plans" class="grid"></div>
+  </section>
+
+  <!-- Mis Accesos -->
+  <section id="view-access" class="view">
+    <div class="toolbar">
+      <h1>Mis accesos / licencias (Empresa B: Licencias)</h1>
+      <div class="pill">Tus compras aparecen aquí automáticamente</div>
+    </div>
+    <div id="purchase-list" class="list"></div>
+
+    <div class="card">
+      <h3>Validar código manualmente</h3>
+      <form id="form-validate" class="row">
+        <input id="code" class="input" placeholder="Ej. BETA-1234ABCD" required />
+        <button class="btn" type="submit">Validar</button>
+      </form>
+      <pre id="validate-result" class="pre"></pre>
+    </div>
+  </section>
+
+  <!-- Admin -->
+  <section id="view-admin" class="view">
+    <h1>Panel Admin (solo admin@soa.dev)</h1>
+    <div class="grid grid-admin">
+      <div class="card">
+        <h3>Crear plan nuevo</h3>
+        <form id="form-plan" class="grid2">
+          <input id="p-name" class="input" placeholder="Nombre del plan" required />
+          <input id="p-price" class="input" type="number" step="0.01" placeholder="Precio" required />
+          <textarea id="p-desc" class="input" placeholder="Descripción (opcional)"></textarea>
+          <button class="btn" type="submit">Crear</button>
+        </form>
+        <p class="muted">*Autorización simulada vía header <code>x-admin=true</code> en Gateway.</p>
+      </div>
+
+      <div class="card">
+        <h3>Planes publicados</h3>
+        <div id="admin-plans" class="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About SOA -->
+  <section id="view-about" class="view">
+    <h1>Arquitectura SOA de esta demo</h1>
+    <div id="soa-topology" class="card">
+      <div class="muted">Cargando topología...</div>
+    </div>
+    <div class="card">
+      <h3>Salud de servicios</h3>
+      <pre class="pre" id="soa-health-pre">Consultando...</pre>
+    </div>
+
+  </section>
+</main>
+
+<!-- Toaster -->
+<div id="toast-wrap" class="toast-wrap"></div>
+
+<!-- Modal Auth -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <button id="closeModal" class="close">✕</button>
+    <h2>Entrar / Registrarse</h2>
+    <div class="tabs">
+      <button class="tab active" data-tab="login">Login</button>
+      <button class="tab" data-tab="register">Registro</button>
+    </div>
+    <div class="tabpanes">
+      <div id="pane-login" class="pane active">
+        <form id="form-login" class="grid2">
+          <input id="l-email" class="input" type="email" placeholder="Email" required />
+          <input id="l-pass" class="input" type="password" placeholder="Password" required />
+          <button class="btn" type="submit">Entrar</button>
+        </form>
+        <p class="muted">Admin de prueba: <code>admin@soa.dev / admin123</code></p>
+      </div>
+      <div id="pane-register" class="pane">
+        <form id="form-register" class="grid2">
+          <input id="r-name" class="input" placeholder="Tu nombre" required />
+          <input id="r-email" class="input" type="email" placeholder="Tu email" required />
+          <input id="r-pass" class="input" type="password" placeholder="Password" required />
+          <button class="btn" type="submit">Crear cuenta</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

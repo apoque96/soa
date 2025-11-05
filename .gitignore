@@ -1,0 +1,75 @@
+# --- Dependencias de Node (backend) ---
+node_modules/
+# (Sugerencia: NO ignores package-lock.json; mantenlo versionado)
+
+# --- Logs y diagnósticos ---
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# --- Variables de entorno / credenciales ---
+.env
+.env.*
+!.env.example        # mantén un ejemplo de variables
+
+# --- Cachés y artefactos de build ---
+dist/
+build/
+coverage/
+.nyc_output/
+.tmp/
+tmp/
+temp/
+
+# --- Cachés de herramientas frontend (por si usas alguna en /front) ---
+.cache/
+.parcel-cache/
+.vite/
+.next/
+out/
+.svelte-kit/
+
+# --- Archivos del sistema / editores ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json     # si quieres compartir extensiones recomendadas
+!.vscode/settings.json       # opcional: solo si deseas versionarlo
+
+# --- Linters / herramientas ---
+.eslintcache
+.stylelintcache
+
+# --- Archivos temporales comunes ---
+*.swp
+*.swo
+*.bak
+*.orig
+
+# --- Certificados locales / llaves ---
+*.pem
+*.pfx
+*.key
+*.crt
+
+# --- Bases de datos/archivos locales (si llegas a usarlos) ---
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Activos generados (si generas bundles/minificados en /front) ---
+front/**/bundle.*
+front/**/*.min.*
+# Si tienes un directorio de assets generado:
+public/assets/*
+!public/assets/.gitkeep
